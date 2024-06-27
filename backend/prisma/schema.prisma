@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Scope {
+  ADMIN
+}
+
+model Member {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  first_name String
+  last_name  String
+  email      String   @unique
+  password   String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Token      Token?
+}
+
+model Token {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  refreshToken String   @unique
+  accessToken  String   @unique
+  memberId     String   @unique @db.ObjectId
+  createdAt    DateTime @default(now())
+  Member       Member   @relation(fields: [memberId], references: [id])
+}
